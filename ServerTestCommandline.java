@@ -1,3 +1,4 @@
+// Ben Schreyer BCC HS March/April AP Java scrum poker command line server for WAN and LAN planning poker sessions
 import java.net.*;
 import java.io.*;
 public class ServerTestCommandline 

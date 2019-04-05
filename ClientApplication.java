@@ -1,3 +1,4 @@
+// Ben Schreyer BCC HS March/April AP Java scrum poker client for WAN and LAN planning poker sessions
 import java.awt.event.*;
 import java.net.*;
 import java.io.*;
@@ -5,10 +6,6 @@ import java.awt.*;
 //the application is a frame that uses event listeners for clicks and key input
 public class ClientApplication extends Frame implements ActionListener
 {
-	
-	/**
-	 * 
-	 */
 	//eclipse forced this for creation of runnable jar
 	private static final long serialVersionUID = 1L;
 
@@ -39,10 +36,12 @@ public class ClientApplication extends Frame implements ActionListener
 	
 	ClientApplication()
 	{
+		//window config
 		setTitle("Ben S Scrum Poker Client - Not Connected");
 		setResizable(false);
 		setSize(600,400);
 		setLayout(null);
+		//intialize card button objects and add them
 		for(int i = 0;i < choice.length;i++)
 		{
 			cardButton[i] = new Button(""+choice[i]);
@@ -51,6 +50,7 @@ public class ClientApplication extends Frame implements ActionListener
 			cardButton[i].addActionListener(this);
 			add(cardButton[i]);
 		}
+		//configure dialog and normal elements 
 		connectDialog.setLayout(null);
 		connectDialog.setSize(450,130);
 		connectDialog.setResizable(false);
@@ -81,6 +81,8 @@ public class ClientApplication extends Frame implements ActionListener
 		sendMessageButton.setEnabled(false);
 		chat.setBounds(10,150,580,180);
 		chat.setEditable(false);
+		
+		//add elements to main window
 		add(doneDiscussingButton);
 		add(sendMessageButton);
 		add(chatBar);
@@ -89,16 +91,20 @@ public class ClientApplication extends Frame implements ActionListener
 		//add listener for window closing to allow smooth closing of application
 		addWindowListener(new WindowAdapter(){public void windowClosing(WindowEvent e) {			
 		dispose();}});
+		//show the window to user
 		setVisible(true);
 		boolean flag = true;
+		//wait for connection
 		while(!connected)
 		{
 
 		}
 		System.out.println("GAME LOOP STARTED");
+		//game loop
 		while(flag &&!socket.isClosed())
 		{
 			String line;
+			//read data from server if possible
 			try {
 				if(input.available()<= 0)
 					continue;
@@ -113,11 +119,13 @@ public class ClientApplication extends Frame implements ActionListener
 				e1.printStackTrace();
 				continue;
 			}
+			//display a chat message correctly if the server intended a chat message
 			if(line.substring(0,3).equals("C{]"))
 			{
 				chat.setText(chat.getText()+"\n"+line.substring(3));
 				chat.setCaretPosition(chat.getText().length()-1);
 			}
+			//change window abilitys based on state of game, pick phase or discussion phase
 			if(line.equals("G{]P"))
 			{
 				for(int i = 0;i < choice.length;i++)
@@ -137,9 +145,11 @@ public class ClientApplication extends Frame implements ActionListener
 	//event handler
 	public void actionPerformed(ActionEvent action) 
 	{
+		//send choice submit data to server when player chooses
 		if(action.getActionCommand().substring(0,10).equals("CardButton"))
 		{
 			System.out.println(action.getActionCommand());
+			//send chat message to server and disable buttons so you cannot send again
 			try 
 			{
 				output.writeUTF("S{]" + (char)(choice[(int)action.getActionCommand().charAt(10)]));
@@ -158,6 +168,7 @@ public class ClientApplication extends Frame implements ActionListener
 		{
 			 connectDialog.setVisible(true);
 		}
+		//send a submit with no choice byte meaning it signifys the player being ready to choose a new card
 		if(action.getActionCommand().equals("DoneDiscussingButton"))
 		{
 			doneDiscussingButton.setEnabled(false);
@@ -177,6 +188,7 @@ public class ClientApplication extends Frame implements ActionListener
 			System.out.println("CONFIRM PRESS");
 			try
 			{
+				//initialize communication objects
 				socket = new Socket(connectDialogTextArea.getText(),1420);
 				
 				output = new DataOutputStream(socket.getOutputStream());
@@ -192,6 +204,7 @@ public class ClientApplication extends Frame implements ActionListener
 			}
 			try
 			{
+				//send player name to server and close dialog
 				output.writeUTF(connectDialogNameArea.getText());
 				setTitle("Ben S Scrum Poker Client - Connected as " + connectDialogNameArea.getText());
 				connected = true;
@@ -216,6 +229,7 @@ public class ClientApplication extends Frame implements ActionListener
 				}
 				dispose();}});
 		}
+		//send formatted message to server if user intends to send message
 		if(action.getActionCommand().equals("SendMessageButton"))
 		{
 				String send = "C{]";
@@ -244,6 +258,7 @@ public class ClientApplication extends Frame implements ActionListener
 	}
 	public static void main(String[] args)
 	{
+		//run the application
 		new ClientApplication();
 	}
 

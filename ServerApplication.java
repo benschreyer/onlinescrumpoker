@@ -136,7 +136,7 @@ public class ServerApplication extends Frame implements ActionListener
 				name[i] = input[i].readUTF();
 				output[i].writeUTF("C{]Connection Esablished");
 				System.out.println(name[i] + " Connected::");
-				chat.append(name[i]+" " + i + " out of " + clients + " joined\n");
+				chat.append(name[i]+" " + (i + 1) + " out of " + clients + " joined\n");
 			}
 			System.out.println("All " + clients + "connected");
 			//basic instructions sent to all players "C{]" is read as a chat message on the client side
